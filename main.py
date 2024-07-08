@@ -1,9 +1,13 @@
 import requests
 from emailme import send_email
+
+topic = "tesla"
 api_key = "545de4557d19470a9038997fae78e5b0"
-url = "https://newsapi.org/v2/everything?q=tesla&from=2024-06-08&" \
+url = "https://newsapi.org/v2/everything?" \
+      f"q={topic}&" \
       "sortBy=publishedAt&" \
-      "apiKey=545de4557d19470a9038997fae78e5b0"
+      "apiKey=545de4557d19470a9038997fae78e5b0&" \
+      "language=en"
 
 # make request
 requests = requests.get(url)
@@ -12,12 +16,13 @@ requests = requests.get(url)
 content = requests.json()
 
 body = ""
-
-# Acess the article titles and description
-for article in (content['articles']):
+# Access the article titles and description
+for article in content['articles'][:20]:
     if article["author"] is not None:
-        body = body + article["title"] + "\n" + article["description"] + 2*"\n"
+        body = "Subject: Today's News" \
+               + "\n" + body + article["title"] + "\n" + \
+               article["description"] + '\n' +\
+               article['url'] + 2*"\n"
 
 body = body.encode("utf-8")
 send_email(user_message=body)
-
